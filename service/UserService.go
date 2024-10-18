@@ -2,6 +2,8 @@ package service
 
 import (
 	"github.com/google/uuid"
+	"kontest-user-service/database"
+	error2 "kontest-user-service/error"
 	"kontest-user-service/model"
 )
 
@@ -12,6 +14,16 @@ func NewUserService() *UserService {
 	return &UserService{}
 }
 
-func getUser(userID uuid.UUID) (*model.User, error) {
-	return nil, nil
+func (us *UserService) GetUser(uid uuid.UUID) (*model.User, error) {
+	user, err := database.FindUserByID(uid)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if user == nil {
+		return nil, &error2.UserNotFoundError{}
+	}
+
+	return user, nil
 }

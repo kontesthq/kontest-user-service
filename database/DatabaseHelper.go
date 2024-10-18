@@ -64,7 +64,7 @@ func SetupDatabase() {
 func createTables() {
 	userInfoTable := `
 	CREATE TABLE IF NOT EXISTS user_info(
-		id SERIAL PRIMARY KEY,
+		id UUID PRIMARY KEY DEFAULT uuid_generate_v4(), 
 		first_name VARCHAR(50) NOT NULL,
 		last_name VARCHAR(50) NOT NULL,
 		account_create_date TIMESTAMPTZ NOT NULL,  -- TIMESTAMP WITH TIME ZONE
@@ -78,7 +78,7 @@ func createTables() {
 	siteTable := `
 	CREATE TABLE IF NOT EXISTS user_site_info(
 		id SERIAL PRIMARY KEY,
-		user_id INT REFERENCES user_info(id) ON DELETE CASCADE,
+		user_id UUID REFERENCES user_info(id) ON DELETE CASCADE,
 		is_site_enabled BOOLEAN NOT NULL,
 		is_automatic_calendar_notification_enabled BOOLEAN NOT NULL,
 		seconds_before_which_notification_to_set INTEGER[]

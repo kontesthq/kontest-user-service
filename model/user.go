@@ -1,24 +1,28 @@
 package model
 
-import "time"
+import (
+	"github.com/google/uuid"
+	"time"
+)
 
 type Site struct {
-	isSiteEnabled                          bool
-	isAutomaticCalendarNotificationEnabled bool
-	secondsBeforeWhichNotificationToSet    []int
+	IsSiteEnabled                          bool  `json:"is_site_enabled"`
+	IsAutomaticCalendarNotificationEnabled bool  `json:"is_automatic_calendar_notification_enabled"`
+	SecondsBeforeWhichNotificationToSet    []int `json:"seconds_before_which_notification_to_set"`
 }
 
 type User struct {
-	FirstName         string
-	LastName          string
-	AccountCreateDate time.Time
+	ID                uuid.UUID `json:"id"`
+	FirstName         string    `json:"first_name"`
+	LastName          string    `json:"last_name"`
+	AccountCreateDate time.Time `json:"account_create_date"`
 
-	LeetcodeUsername   string
-	CodechefUsername   string
-	CodeforcesUsername string
+	LeetcodeUsername   string `json:"leetcode_username"`
+	CodechefUsername   string `json:"codechef_username"`
+	CodeforcesUsername string `json:"codeforces_username"`
 
-	sites []Site
+	Sites []Site `json:"sites"`
 
-	minDurationInSecond int
-	maxDurationInSecond int
+	MinDurationInSecond int `json:"min_duration_in_second"`
+	MaxDurationInSecond int `json:"max_duration_in_second"`
 }

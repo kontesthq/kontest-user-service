@@ -1,10 +1,10 @@
 package routes
 
 import (
-	"fmt"
+	"kontest-user-service/handler"
 	"net/http"
 )
 
 func RegisterRoutes(router *http.ServeMux) {
-	fmt.Println(router)
+	router.HandleFunc("GET /userInfo", handler.GetUserHandler)
 }
