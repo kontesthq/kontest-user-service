@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/ayushs-2k4/go-consul-service-manager/consulservicemanager"
+	"github.com/kontesthq/go-consul-service-manager/consulservicemanager"
 	"io"
 	"kontest-user-service/database"
-	"kontest-user-service/route"
+	routes "kontest-user-service/route"
+	"kontest-user-service/utils"
 	"log/slog"
 	"net/http"
 	"os"
@@ -95,6 +96,8 @@ func initializeVariables() {
 	if sslMode := os.Getenv("DB_SSL_MODE"); sslMode != "" {
 		isSSLModeEnabled = sslMode == "enable"
 	}
+
+	utils.InitializeVariables()
 }
 
 func setupLogging() *os.File {

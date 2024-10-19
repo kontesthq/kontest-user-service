@@ -8,9 +8,11 @@ import (
 	"kontest-user-service/database"
 	error2 "kontest-user-service/error"
 	"kontest-user-service/model"
+	"kontest-user-service/utils"
 	"log/slog"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -53,7 +55,10 @@ func (us *UserService) GetUser(uid uuid.UUID) (*model.GetUserResponse, error) {
 }
 
 func getEmail(userID string) (string, error) {
-	urlString := "http://localhost:5153/auth/internal/email"
+	apiGatewayURL := "http" + "://" + utils.API_GATEWAY_HOST + ":" + strconv.Itoa(utils.API_GATEWAY_PORT)
+	slog.Info(fmt.Sprintf("API Gateway URL: %s\n", apiGatewayURL))
+	urlString := apiGatewayURL + "/auth/internal/email"
+	slog.Info(fmt.Sprintf("FINAL URL: %s\n", urlString))
 
 	parsedURL, err := url.Parse(urlString)
 	if err != nil {
@@ -65,11 +70,12 @@ func getEmail(userID string) (string, error) {
 	parsedURL.RawQuery = query.Encode()
 
 	req, err := http.NewRequest(http.MethodGet, parsedURL.String(), nil)
-
 	if err != nil {
 		slog.Error(fmt.Sprintf("Error creating request: %v\n", err))
 		return "", err
 	}
+
+	slog.Info(fmt.Sprintf("Final Full URL: %s\n", parsedURL.String()))
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
