@@ -14,11 +14,11 @@ import (
 )
 
 var (
-	applicationHost = "localhost"   // Default value for local development
-	applicationPort = 5156          // Default value for local development
-	serviceName     = "KONTEST-API" // Service name for Service Registry
-	consulHost      = "localhost"   // Default value for local development
-	consulPort      = 5150          // Port as a constant (can be constant if it won't change)
+	applicationHost = "localhost"            // Default value for local development
+	applicationPort = 5156                   // Default value for local development
+	serviceName     = "KONTEST-USER-SERVICE" // Service name for Service Registry
+	consulHost      = "localhost"            // Default value for local development
+	consulPort      = 5150                   // Port as a constant (can be constant if it won't change)
 
 	dbHost           = "localhost"
 	dbPort           = "5432"
