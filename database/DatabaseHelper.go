@@ -79,9 +79,11 @@ func createTables() {
 	CREATE TABLE IF NOT EXISTS user_site_info(
 		id SERIAL PRIMARY KEY,
 		user_id UUID REFERENCES user_info(id) ON DELETE CASCADE,
+		site_name TEXT NOT NULL ,
 		is_site_enabled BOOLEAN NOT NULL,
 		is_automatic_calendar_notification_enabled BOOLEAN NOT NULL,
-		seconds_before_which_notification_to_set INTEGER[]
+		seconds_before_which_app_notification_to_set INTEGER[],
+		CONSTRAINT unique_user_site UNIQUE (user_id, site_name)
 	);`
 
 	// Execute the queries

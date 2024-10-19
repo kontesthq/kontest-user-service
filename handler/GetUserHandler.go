@@ -13,7 +13,7 @@ func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	if err := decoder.Decode(&getUserRequest); err != nil {
-		http.Error(w, "Please provide login request in correct JSON format", http.StatusBadRequest)
+		http.Error(w, "Please provide request body in correct JSON format", http.StatusBadRequest)
 		return
 	}
 
