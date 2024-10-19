@@ -4,6 +4,8 @@ type GetUserResponse struct {
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
 
+	Email string `json:"email"`
+
 	LeetcodeUsername   string `json:"leetcode_username"`
 	CodechefUsername   string `json:"codechef_username"`
 	CodeforcesUsername string `json:"codeforces_username"`

@@ -25,18 +25,7 @@ func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	getUserResponse := model.GetUserResponse{
-		FirstName:           user.FirstName,
-		LastName:            user.LastName,
-		LeetcodeUsername:    user.LeetcodeUsername,
-		CodechefUsername:    user.CodechefUsername,
-		CodeforcesUsername:  user.CodeforcesUsername,
-		Sites:               user.Sites,
-		MinDurationInSecond: user.MinDurationInSecond,
-		MaxDurationInSecond: user.MaxDurationInSecond,
-	}
-
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(&getUserResponse)
+	json.NewEncoder(w).Encode(&user)
 }

@@ -4,10 +4,14 @@ import (
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
+	"io"
 	"kontest-user-service/database"
 	error2 "kontest-user-service/error"
 	"kontest-user-service/model"
 	"log/slog"
+	"net/http"
+	"net/url"
+	"strings"
 	"time"
 )
 
@@ -18,7 +22,7 @@ func NewUserService() *UserService {
 	return &UserService{}
 }
 
-func (us *UserService) GetUser(uid uuid.UUID) (*model.User, error) {
+func (us *UserService) GetUser(uid uuid.UUID) (*model.GetUserResponse, error) {
 	user, err := database.FindUserByID(uid)
 
 	if err != nil {
@@ -29,7 +33,64 @@ func (us *UserService) GetUser(uid uuid.UUID) (*model.User, error) {
 		return nil, &error2.UserNotFoundError{}
 	}
 
-	return user, nil
+	email, err := getEmail(uid.String())
+
+	if err != nil {
+		slog.Error(fmt.Sprintf("Error in getting email: %v\n", err))
+	}
+
+	return &model.GetUserResponse{
+		FirstName:           user.FirstName,
+		LastName:            user.LastName,
+		Email:               email,
+		LeetcodeUsername:    user.LeetcodeUsername,
+		CodechefUsername:    user.CodechefUsername,
+		CodeforcesUsername:  user.CodeforcesUsername,
+		Sites:               user.Sites,
+		MinDurationInSecond: user.MinDurationInSecond,
+		MaxDurationInSecond: user.MaxDurationInSecond,
+	}, nil
+}
+
+func getEmail(userID string) (string, error) {
+	urlString := "http://localhost:5153/auth/internal/email"
+
+	parsedURL, err := url.Parse(urlString)
+	if err != nil {
+		return "", fmt.Errorf("error parsing base URL: %w", err)
+	}
+
+	query := url.Values{}
+	query.Add("user_id", userID)
+	parsedURL.RawQuery = query.Encode()
+
+	req, err := http.NewRequest(http.MethodGet, parsedURL.String(), nil)
+
+	if err != nil {
+		slog.Error(fmt.Sprintf("Error creating request: %v\n", err))
+		return "", err
+	}
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		slog.Error(fmt.Sprintf("Error making request: %v\n", err))
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		slog.Error(fmt.Sprintf("Error: received status code %d\n", resp.StatusCode))
+		return "", err
+	}
+
+	email, err := io.ReadAll(resp.Body)
+	if err != nil {
+		slog.Error(fmt.Sprintf("Error reading response body: %v\n", err))
+		return "", err
+	}
+
+	return strings.Trim(strings.TrimSpace(string(email)), "\""), nil
 }
 
 func getUser(uid uuid.UUID) (*model.User, error) {
