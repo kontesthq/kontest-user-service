@@ -82,15 +82,17 @@ func getSitesOfAUser(uid uuid.UUID) ([]model.Site, error) {
 func UpdateUserOrCreate(user *model.User, tx *sqlx.Tx) (bool, error) {
 	query := `
 	INSERT INTO user_info (
-		id, first_name, last_name, leetcode_username, 
-		codechef_username, codeforces_username, 
+		id, first_name, last_name, college_name, college_state,
+	    leetcode_username, codechef_username, codeforces_username, 
 		min_duration_in_seconds, max_duration_in_seconds, account_create_date
 	)
-	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
 	ON CONFLICT (id) DO UPDATE
 	SET
 		first_name = EXCLUDED.first_name,
 		last_name = EXCLUDED.last_name,
+		college_name = EXCLUDED.college_name,
+		college_state = EXCLUDED.college_state,
 		leetcode_username = EXCLUDED.leetcode_username,
 		codechef_username = EXCLUDED.codechef_username,
 		codeforces_username = EXCLUDED.codeforces_username,
@@ -121,6 +123,8 @@ func UpdateUserOrCreate(user *model.User, tx *sqlx.Tx) (bool, error) {
 		user.ID, // Assuming `user.ID` is the primary key in user_info
 		user.FirstName,
 		user.LastName,
+		user.CollegeName,
+		user.CollegeState,
 		user.LeetcodeUsername,
 		user.CodechefUsername,
 		user.CodeforcesUsername,

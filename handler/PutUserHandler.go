@@ -11,6 +11,17 @@ import (
 )
 
 func PutUserHandler(w http.ResponseWriter, r *http.Request) {
+	//// Read the body
+	//body, err := io.ReadAll(r.Body)
+	//if err != nil {
+	//	http.Error(w, "Unable to read request body", http.StatusBadRequest)
+	//	return
+	//}
+	//defer r.Body.Close() // Ensure the body is closed after reading
+	//
+	//// Print the body as a string (or process it as needed)
+	//fmt.Fprintf(w, "Received body: %s", body)
+
 	putUserRequest := model.PutUserRequest{}
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()

@@ -67,6 +67,8 @@ func createTables() {
 		id UUID PRIMARY KEY DEFAULT uuid_generate_v4(), 
 		first_name VARCHAR(50) NOT NULL,
 		last_name VARCHAR(50) NOT NULL,
+	    college_name VARCHAR(100),
+	    college_state VARCHAR(50),
 		account_create_date TIMESTAMPTZ NOT NULL,  -- TIMESTAMP WITH TIME ZONE
 		leetcode_username VARCHAR(50),
 		codechef_username VARCHAR(50),

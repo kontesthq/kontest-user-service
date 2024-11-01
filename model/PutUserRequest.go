@@ -12,4 +12,7 @@ type PutUserRequest struct {
 
 	MinDurationInSecond *int `json:"min_duration_in_second,omitempty"`
 	MaxDurationInSecond *int `json:"max_duration_in_second,omitempty"`
+
+	CollegeName  *string `json:"college_name,omitempty"`
+	CollegeState *string `json:"college_state,omitempty"`
 }

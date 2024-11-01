@@ -26,4 +26,7 @@ type User struct {
 
 	MinDurationInSecond int `json:"min_duration_in_second" db:"min_duration_in_seconds"`
 	MaxDurationInSecond int `json:"max_duration_in_second" db:"max_duration_in_seconds"`
+
+	CollegeName  string `json:"college_name" db:"college_name"`
+	CollegeState string `json:"college_state" db:"college_state"`
 }

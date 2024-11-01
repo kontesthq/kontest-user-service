@@ -14,4 +14,7 @@ type GetUserResponse struct {
 
 	MinDurationInSecond int `json:"min_duration_in_second"`
 	MaxDurationInSecond int `json:"max_duration_in_second"`
+
+	CollegeName  string `json:"college_name"`
+	CollegeState string `json:"college_state"`
 }

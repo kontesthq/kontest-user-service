@@ -43,6 +43,8 @@ func (us *UserService) GetUser(uid uuid.UUID) (*model.GetUserResponse, error) {
 	return &model.GetUserResponse{
 		FirstName:           user.FirstName,
 		LastName:            user.LastName,
+		CollegeName:         user.CollegeName,
+		CollegeState:        user.CollegeState,
 		Email:               email,
 		LeetcodeUsername:    user.LeetcodeUsername,
 		CodechefUsername:    user.CodechefUsername,
@@ -196,6 +198,14 @@ func (us *UserService) UpdateUser(uid uuid.UUID, request model.PutUserRequest) (
 
 	if request.MaxDurationInSecond != nil {
 		currentSavedUser.MaxDurationInSecond = *request.MaxDurationInSecond
+	}
+
+	if request.CollegeName != nil {
+		currentSavedUser.CollegeName = *request.CollegeName
+	}
+
+	if request.CollegeState != nil {
+		currentSavedUser.CollegeState = *request.CollegeState
 	}
 
 	isSuccessful, err := database.UpdateUserOrCreate(currentSavedUser, nil)
