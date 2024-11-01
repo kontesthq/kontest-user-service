@@ -12,7 +12,6 @@ import (
 	"log/slog"
 	"net/http"
 	"net/url"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -55,15 +54,32 @@ func (us *UserService) GetUser(uid uuid.UUID) (*model.GetUserResponse, error) {
 }
 
 func getEmail(userID string) (string, error) {
-	apiGatewayURL := "http" + "://" + utils.API_GATEWAY_HOST + ":" + strconv.Itoa(utils.API_GATEWAY_PORT)
-	slog.Info(fmt.Sprintf("API Gateway URL: %s\n", apiGatewayURL))
-	urlString := apiGatewayURL + "/auth/internal/email"
-	slog.Info(fmt.Sprintf("FINAL URL: %s\n", urlString))
+	emailClient, err := utils.GetOrCreateClient("KONTEST-AUTHENTICATION-SERVICE")
 
-	parsedURL, err := url.Parse(urlString)
+	if err != nil {
+		slog.Error(fmt.Sprintf("Error getting email client: %v\n", err))
+		return "", err
+	}
+
+	if emailClient == nil {
+		slog.Error("Email client is nil")
+		return "", errors.New("email client is nil")
+	}
+
+	server, err := emailClient.GetLoadBalancer().ChooseServer(emailClient)
+	if err != nil {
+		return "", err
+	}
+
+	baseURL := fmt.Sprintf("%s://%s:%d", server.GetScheme(), server.GetHost(), server.GetPort())
+	slog.Info(fmt.Sprintf("Base URL: %s\n", baseURL))
+
+	parsedURL, err := url.Parse(baseURL)
 	if err != nil {
 		return "", fmt.Errorf("error parsing base URL: %w", err)
 	}
+
+	parsedURL.Path = "/internal/email"
 
 	query := url.Values{}
 	query.Add("user_id", userID)

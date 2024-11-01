@@ -14,21 +14,6 @@ import (
 	"time"
 )
 
-var (
-	applicationHost = "localhost"            // Default value for local development
-	applicationPort = 5156                   // Default value for local development
-	serviceName     = "KONTEST-USER-SERVICE" // Service name for Service Registry
-	consulHost      = "localhost"            // Default value for local development
-	consulPort      = 5150                   // Port as a constant (can be constant if it won't change)
-
-	dbHost           = "localhost"
-	dbPort           = "5432"
-	dbName           = "kontest"
-	dbUser           = "ayushsinghal"
-	dbPassword       = ""
-	isSSLModeEnabled = false
-)
-
 func initializeVariables() {
 	// Get the hostname of the machine
 	hostname, err := os.Hostname()
@@ -39,9 +24,9 @@ func initializeVariables() {
 
 	// Attempt to read the KONTEST_API_SERVER_HOST environment variable
 	if host := os.Getenv("KONTEST_USER_SERVICE_HOST"); host != "" {
-		applicationHost = host // Override with the environment variable if set
+		utils.ApplicationHost = host // Override with the environment variable if set
 	} else {
-		applicationHost = hostname // Use the machine's hostname if the env var is not set
+		utils.ApplicationHost = hostname // Use the machine's hostname if the env var is not set
 	}
 
 	// Attempt to read the KONTEST_API_SERVER_PORT environment variable
@@ -51,53 +36,51 @@ func initializeVariables() {
 			slog.Error("Invalid port value", slog.String("error", err.Error()), slog.String("port", port))
 			os.Exit(1) // Exit the program with a non-zero status code
 		}
-		applicationPort = parsedPort // Override with the environment variable if set
-		slog.Info("Application port set from environment variable", slog.Int("applicationPort", applicationPort))
+		utils.ApplicationPort = parsedPort // Override with the environment variable if set
+		slog.Info("Application port set from environment variable", slog.Int("applicationPort", utils.ApplicationPort))
 	}
 
 	// Attempt to read the CONSUL_ADDRESS environment variable
 	if host := os.Getenv("CONSUL_HOST"); host != "" {
-		consulHost = host // Override with the environment variable if set
+		utils.ConsulHost = host // Override with the environment variable if set
 	}
 
 	// Attempt to read the CONSUL_PORT environment variable
 	if port := os.Getenv("CONSUL_PORT"); port != "" {
 		if portInt, err := strconv.Atoi(port); err == nil {
-			consulPort = portInt // Override with the environment variable if set and valid
+			utils.ConsulPort = portInt // Override with the environment variable if set and valid
 		}
 	}
 
 	// Attempt to read the DB_HOST environment variable
 	if host := os.Getenv("DB_HOST"); host != "" {
-		dbHost = host // Override with the environment variable if set
+		utils.DbHost = host // Override with the environment variable if set
 	}
 
 	// Attempt to read the DB_PORT environment variable
 	if port := os.Getenv("DB_PORT"); port != "" {
-		dbPort = port // Override with the environment variable if set
+		utils.DbPort = port // Override with the environment variable if set
 	}
 
 	// Attempt to read the DB_NAME environment variable
 	if name := os.Getenv("DB_NAME"); name != "" {
-		dbName = name // Override with the environment variable if set
+		utils.DbName = name // Override with the environment variable if set
 	}
 
 	// Attempt to read the DB_USER environment variable
 	if user := os.Getenv("DB_USER"); user != "" {
-		dbUser = user // Override with the environment variable if set
+		utils.DbUser = user // Override with the environment variable if set
 	}
 
 	// Attempt to read the DB_PASSWORD environment variable
 	if password := os.Getenv("DB_PASSWORD"); password != "" {
-		dbPassword = password // Override with the environment variable if set
+		utils.DbPassword = password // Override with the environment variable if set
 	}
 
 	// Attempt to read the DB_SSL_MODE environment variable
 	if sslMode := os.Getenv("DB_SSL_MODE"); sslMode != "" {
-		isSSLModeEnabled = sslMode == "enable"
+		utils.IsSSLModeEnabled = sslMode == "enable"
 	}
-
-	utils.InitializeVariables()
 }
 
 func setupLogging() *os.File {
@@ -147,23 +130,23 @@ func main() {
 	slog.Info("Server restarted", slog.Time("time", time.Now()))
 
 	// Initialize the database connection
-	database.InitializeDatabase(dbName, dbPort, dbHost, dbUser, dbPassword, map[bool]string{true: "enable", false: "disable"}[isSSLModeEnabled])
+	database.InitializeDatabase(utils.DbName, utils.DbPort, utils.DbHost, utils.DbUser, utils.DbPassword, map[bool]string{true: "enable", false: "disable"}[utils.IsSSLModeEnabled])
 	database.SetupDatabase()
 	defer database.CloseDB()
 
-	consulService := consulservicemanager.NewConsulService(consulHost, consulPort)
-	consulService.Start(applicationHost, applicationPort, serviceName, []string{})
+	consulService := consulservicemanager.NewConsulService(utils.ConsulHost, utils.ConsulPort)
+	consulService.Start(utils.ApplicationHost, utils.ApplicationPort, utils.ServiceName, []string{})
 
 	router := http.NewServeMux()
 
 	routes.RegisterRoutes(router)
 
 	server := http.Server{
-		Addr:    ":" + strconv.Itoa(applicationPort),
+		Addr:    ":" + strconv.Itoa(utils.ApplicationPort),
 		Handler: router,
 	}
 
-	slog.Info("Server listening", slog.Int("port", applicationPort))
+	slog.Info("Server listening", slog.Int("port", utils.ApplicationPort))
 
 	err := server.ListenAndServe()
 	if err != nil {
