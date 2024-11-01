@@ -6,6 +6,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/kontesthq/go-consul-service-manager v0.1.3-beta-4
+	github.com/kontesthq/go-load-balancer v0.1.9
 	github.com/lib/pq v1.10.9
 )
 
@@ -22,7 +23,6 @@ require (
 	github.com/hashicorp/go-uuid v1.0.3 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/hashicorp/serf v0.10.1 // indirect
-	github.com/kontesthq/go-load-balancer v0.1.9-beta-8 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
